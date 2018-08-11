@@ -20,9 +20,6 @@ variable "oci_user" {
     description = "The user admin"
 }
 
-variable "internet_gateway_display_name" {
-    description = "The user admin"
-}
 
 variable "public_subnet_cidr_block" {
     description = "10.0.1.0/24"
