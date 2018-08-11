@@ -16,3 +16,6 @@ variable "compartment_ocid" {
   description = "The OCID of your compartment"
 }
 
+variable "oci_user" {
+    description = "The user admin"
+}
