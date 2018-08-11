@@ -3,6 +3,13 @@
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
 
+variable "region" {
+   description = "region"
+}
+
+variable "tenancy_ocid" {
+   description = "Tenant's OCID"
+}
 
 variable "vcn_cidr" {
   description = "CIDR block provided by your network administrator"
@@ -49,13 +56,11 @@ variable "dmz_subnet_availability_domain" {
 
 
 # Choose an Availability Domain
-variable "AD1" {
+variable "AD" {
     default = "1"
 }
 
-variable "AD2" {
-    default = "2"
-}
+
 
 variable "InstanceShape" {
     default = "VM.Standard1.1"
