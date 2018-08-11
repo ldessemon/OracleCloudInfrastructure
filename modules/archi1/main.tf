@@ -12,7 +12,7 @@ terraform {
 
 resource "oci_core_vcn" "vcn1" {
   cidr_block = "${var.vcn_cidr}"
-  dns_label = "${var.vcn_name}"
+  dns_label = "vcn1"
   compartment_id = "${var.compartment_ocid}"
   display_name = "${var.vcn_display_name}"
 }
