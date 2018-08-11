@@ -226,7 +226,7 @@ resource "oci_core_subnet" "vcn1_dmz_subnet" {
 
 # =========== Create the NAT vm instance in the Public Subnet ===============
 
-resource "oci_core_instance" "nat_instance" {
+resource "oci_core_instance" "NatInstance" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "nat_instance"
@@ -234,8 +234,52 @@ resource "oci_core_instance" "nat_instance" {
     shape = "${var.InstanceShape}"
     subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
     hostname_label = "nat_instance"
+    create_vnic_details {
+        subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
+        skip_source_dest_check = true
+    }
     metadata {
       ssh_authorized_keys = "${var.ssh_public_key}"
-      user_data = "${base64encode(var.user-data)}"
+      user_data = "${base64encode(file("user_data.tpl"))}"
+    }
+    timeouts {
+        create = "10m"
+    }
+}
+
+# Gets a list of VNIC attachments on the instance
+data "oci_core_vnic_attachments" "NatInstanceVnics" {
+    compartment_id = "${var.compartment_ocid}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    instance_id = "${oci_core_instance.NatInstance.id}"
+}
+
+# Gets the OCID of the first (default) vNIC on the NAT instance
+data "oci_core_vnic" "NatInstanceVnic" {
+	vnic_id = "${lookup(data.oci_core_vnic_attachments.NatInstanceVnics.vnic_attachments[0],"vnic_id")}"
+}
+
+data "oci_core_private_ips" "myPrivateIPs" {
+    ip_address = "${data.oci_core_vnic.NatInstanceVnic.private_ip_address}"
+    subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
+    #vnic_id =  "${data.oci_core_vnic.NatInstanceVnic.id}"
+}
+
+
+resource "oci_core_instance" "PrivateInstance" {
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    compartment_id = "${var.compartment_ocid}"
+    display_name = "PrivateInstance"
+    image = "${var.InstanceImageOCID[var.region]}"
+    shape = "${var.InstanceShape}"
+    create_vnic_details {
+      subnet_id = "${oci_core_subnet.vcn1_private_subnet.id}"
+      assign_public_ip = false
+    }
+    metadata {
+      ssh_authorized_keys = "${var.ssh_public_key}"
+    }
+    timeouts {
+      create = "10m"
     }
 }
