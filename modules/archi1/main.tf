@@ -10,7 +10,7 @@ terraform {
 # CREATE A VCN
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "oci_core_vcn" "${var.vcn_name}" {
+resource "oci_core_vcn" "vcn1" {
   cidr_block = "${var.vcn_cidr}"
   dns_label = "${var.vcn_name}"
   compartment_id = "${var.compartment_ocid}"
