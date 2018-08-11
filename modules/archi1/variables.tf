@@ -19,3 +19,35 @@ variable "compartment_ocid" {
 variable "oci_user" {
     description = "The user admin"
 }
+
+variable "internet_gateway_display_name" {
+    description = "The user admin"
+}
+
+variable "public_subnet_cidr_block" {
+    description = "10.0.1.0/24"
+}
+
+variable "private_subnet_cidr_block" {
+    description = "10.0.2.0/24"
+}
+
+variable "dmz_subnet_cidr_block" {
+    description = "10.0.3.0/24"
+}
+
+
+
+variable "public_subnet_availability_domain" {
+    description = "KkUJ:US-ASHBURN-AD-1"
+}
+
+variable "private_subnet_availability_domain" {
+    description = "KkUJ:US-ASHBURN-AD-1"
+}
+
+variable "dmz_subnet_availability_domain" {
+    description = "KkUJ:US-ASHBURN-AD-1"
+}
+
+
