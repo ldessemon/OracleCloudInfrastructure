@@ -48,3 +48,29 @@ variable "dmz_subnet_availability_domain" {
 }
 
 
+# Choose an Availability Domain
+variable "AD1" {
+    default = "1"
+}
+
+variable "AD2" {
+    default = "2"
+}
+
+variable "InstanceShape" {
+    default = "VM.Standard1.1"
+}
+
+variable "InstanceImageOCID" {
+  type = "map"
+  default = {
+    // Oracle-provided image "Oracle-Linux-7.5-2018.07.20-0"
+    // See https://docs.cloud.oracle.com/iaas/images/oraclelinux-7x/
+    us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaagqwnrno6c35vplndep6hu5gevyiqqag37muue3ich7g6tbs5aq4q"
+  }
+}
+
+variable "ssh_public_key" {
+    description = "SSH public key"
+}
+

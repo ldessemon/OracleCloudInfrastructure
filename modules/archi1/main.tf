@@ -104,7 +104,35 @@ resource "oci_core_security_list" "vcn1_public_seclist" {
         destination = "0.0.0.0/0"
         protocol = "6"
     }]
-    ingress_security_rules = []
+    ingress_security_rules = [
+    {
+        tcp_options {
+            "max" = 443
+            "min" = 443
+        }
+        protocol = "6"
+        source = "0.0.0.0/0"
+    },
+	{
+        protocol = "all"
+        source = "${var.vcn_cidr}"
+    },
+    {
+        protocol = "6"
+        source = "0.0.0.0/0"
+        tcp_options {
+            "min" = 22
+            "max" = 22
+        }
+    },
+    {
+        protocol = "1"
+        source = "0.0.0.0/0"
+        icmp_options {
+            "type" = 3
+            "code" = 4
+        }
+    }]
 }
 
 resource "oci_core_security_list" "vcn1_private_seclist" {
@@ -115,7 +143,11 @@ resource "oci_core_security_list" "vcn1_private_seclist" {
         destination = "0.0.0.0/0"
         protocol = "6"
     }]
-    ingress_security_rules = []
+    ingress_security_rules = [
+	{
+        protocol = "all"
+        source = "${var.vcn_cidr}"
+    }]
 }
 
 resource "oci_core_security_list" "vcn1_dmz_seclist" {
@@ -123,10 +155,39 @@ resource "oci_core_security_list" "vcn1_dmz_seclist" {
     display_name = "DMZ Sec List"
     vcn_id = "${oci_core_vcn.vcn1.id}"
     egress_security_rules = [{
+        protocol = "all"
         destination = "0.0.0.0/0"
-        protocol = "6"
     }]
-    ingress_security_rules = []
+
+    ingress_security_rules = [
+    {
+        tcp_options {
+            "max" = 443
+            "min" = 443
+        }
+        protocol = "6"
+        source = "0.0.0.0/0"
+    },
+	{
+        protocol = "all"
+        source = "${var.vcn_cidr}"
+    },
+    {
+        protocol = "6"
+        source = "0.0.0.0/0"
+        tcp_options {
+            "min" = 22
+            "max" = 22
+        }
+    },
+    {
+        protocol = "1"
+        source = "0.0.0.0/0"
+        icmp_options {
+            "type" = 3
+            "code" = 4
+        }
+    }]
 }
 
 # ================== SECURITY LIST =================
@@ -163,3 +224,18 @@ resource "oci_core_subnet" "vcn1_dmz_subnet" {
 	route_table_id = "${oci_core_route_table.vcn1_dmz_route_table.id}"
 }
 
+# =========== Create the NAT vm instance in the Public Subnet ===============
+
+resource "oci_core_instance" "nat_instance" {
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
+    compartment_id = "${var.compartment_ocid}"
+    display_name = "nat_instance"
+    image = "${var.InstanceImageOCID[var.region]}"
+    shape = "${var.InstanceShape}"
+    subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
+    hostname_label = "nat_instance"
+    metadata {
+      ssh_authorized_keys = "${var.ssh_public_key}"
+      user_data = "${base64encode(var.user-data)}"
+    }
+}
