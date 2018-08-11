@@ -74,7 +74,7 @@ resource "oci_core_route_table" "vcn1_private_route_table" {
 	compartment_id = "${var.compartment_ocid}"
       route_rules {
         cidr_block = "0.0.0.0/0"
-        network_entity_id = "${oci_core_internet_gateway.vcn1_drg.id}"
+        network_entity_id = "${oci_core_drg.vcn1_drg.id}"
       }
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 }
