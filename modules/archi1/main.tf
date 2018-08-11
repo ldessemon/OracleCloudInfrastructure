@@ -49,7 +49,7 @@ resource "oci_core_internet_gateway" "vcn1_internet_gateway" {
 	compartment_id = "${var.compartment_ocid}"
 	enabled = "true"
 	vcn_id = "${oci_core_vcn.vcn1.id}"
-	display_name = "${var.internet_gateway_display_name}"
+	display_name = "Internet Gateway"
 }
 
 # ================== ROUTE TABLES =================
@@ -99,29 +99,18 @@ resource "oci_core_route_table" "vcn1_dmz_route_table" {
 resource "oci_core_security_list" "vcn1_public_seclist" {
     compartment_id = "${var.compartment_ocid}"
     display_name = "Public"
-    vcn_id = "${oci_core_virtual_network.vcn1.id}"
+    vcn_id = "${oci_core_vcn.vcn1.id}"
     egress_security_rules = [{
         destination = "0.0.0.0/0"
         protocol = "6"
     }]
-    ingress_security_rules = [{
-        tcp_options {
-            "max" = 80
-            "min" = 80
-        }
-        protocol = "6"
-        source = "0.0.0.0/0"
-    },
-	{
-	protocol = "6"
-	source = "${var.public_subnet_cidr}"
-    }]
+    ingress_security_rules = []
 }
 
 resource "oci_core_security_list" "vcn1_private_seclist" {
     compartment_id = "${var.compartment_ocid}"
     display_name = "Private"
-    vcn_id = "${oci_core_virtual_network.vcn1.id}"
+    vcn_id = "${oci_core_vcn.vcn1.id}"
     egress_security_rules = [{
         destination = "0.0.0.0/0"
         protocol = "6"
@@ -132,7 +121,7 @@ resource "oci_core_security_list" "vcn1_private_seclist" {
 resource "oci_core_security_list" "vcn1_dmz_seclist" {
     compartment_id = "${var.compartment_ocid}"
     display_name = "DMZ"
-    vcn_id = "${oci_core_virtual_network.vcn1.id}"
+    vcn_id = "${oci_core_vcn.vcn1.id}"
     egress_security_rules = [{
         destination = "0.0.0.0/0"
         protocol = "6"
@@ -146,7 +135,7 @@ resource "oci_core_subnet" "vcn1_public_subnet" {
 	#Required
 	availability_domain = "${var.public_subnet_availability_domain}"
 	cidr_block = "${var.public_subnet_cidr_block}"
-	compartment_id = "${var.compartment_id}"
+	compartment_id = "${var.compartment_ocid}"
 	security_list_ids = ["${oci_core_security_list.vcn1_public_seclist.id}"]
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 	route_table_id = "${oci_core_route_table.vcn1_public_route_table.id}"
@@ -156,7 +145,7 @@ resource "oci_core_subnet" "vcn1_private_subnet" {
 	#Required
 	availability_domain = "${var.private_subnet_availability_domain}"
 	cidr_block = "${var.private_subnet_cidr_block}"
-	compartment_id = "${var.compartment_id}"
+	compartment_id = "${var.compartment_ocid}"
 	security_list_ids = ["${oci_core_security_list.vcn1_private_seclist.id}"]
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 	route_table_id = "${oci_core_route_table.vcn1_private_route_table.id}"
@@ -165,7 +154,7 @@ resource "oci_core_subnet" "vcn1_dmz_subnet" {
 	#Required
 	availability_domain = "${var.dmz_subnet_availability_domain}"
 	cidr_block = "${var.dmz_subnet_cidr_block}"
-	compartment_id = "${var.compartment_id}"
+	compartment_id = "${var.compartment_ocid}"
 	security_list_ids = ["${oci_core_security_list.vcn1_dmz_seclist.id}"]
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 	route_table_id = "${oci_core_route_table.vcn1_dmz_route_table.id}"
