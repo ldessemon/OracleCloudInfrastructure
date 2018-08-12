@@ -287,5 +287,5 @@ resource "oci_core_route_table" "vcn1_private_route_table" {
 		cidr_block = "0.0.0.0/0"
 		network_entity_id = "${lookup(data.oci_core_private_ips.myPrivateIPs.private_ips[0],"id")}" 
 	}
-	vcn_id = "${oci_core_vcn.test_vcn.id}"
+	vcn_id = "${oci_core_vcn.vcn1.id}"
 }
