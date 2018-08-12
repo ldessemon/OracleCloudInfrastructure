@@ -307,7 +307,7 @@ resource "oci_core_instance" "PrivateInstance" {
 }
 
 resource "oci_core_instance" "DmzInstance" {
-    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "${var.dmz_instance_name}"
     source_details {

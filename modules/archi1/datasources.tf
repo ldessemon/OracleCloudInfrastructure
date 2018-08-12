@@ -6,7 +6,7 @@ data "oci_identity_availability_domains" "ADs" {
 # Gets a list of VNIC attachments on the instance
 data "oci_core_vnic_attachments" "NatInstanceVnics" {
     compartment_id = "${var.compartment_ocid}"
-    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
     instance_id = "${oci_core_instance.NatInstance.id}"
 }
 
