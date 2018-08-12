@@ -237,7 +237,7 @@ resource "oci_core_instance" "NatInstance" {
 	}
     shape = "${var.InstanceShape}"
     subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
-    hostname_label = "nat_instance"
+    hostname_label = "natinstance"
     create_vnic_details {
         subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
         skip_source_dest_check = true
