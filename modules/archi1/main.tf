@@ -70,12 +70,15 @@ resource "oci_core_route_table" "vcn1_public_route_table" {
 
 resource "oci_core_route_table" "vcn1_private_route_table" {
 	#Required
-    display_name = "Private Route Table"    
 	compartment_id = "${var.compartment_ocid}"
-      route_rules {
-        cidr_block = "0.0.0.0/0"
-        network_entity_id = "${oci_core_drg.vcn1_drg.id}"
-      }
+	route_rules {
+		#Required
+		network_entity_id = "${oci_core_internet_gateway.vcn1_internet_gateway.id}"
+
+		#Optional
+		cidr_block = "0.0.0.0/0"
+		network_entity_id = "${lookup(data.oci_core_private_ips.myPrivateIPs.private_ips[0],"id")}" 
+	}
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 }
 
@@ -276,16 +279,3 @@ resource "oci_core_instance" "PrivateInstance" {
 }
 
 
-resource "oci_core_route_table" "vcn1_private_route_table" {
-	#Required
-	compartment_id = "${var.compartment_ocid}"
-	route_rules {
-		#Required
-		network_entity_id = "${oci_core_internet_gateway.vcn1_internet_gateway.id}"
-
-		#Optional
-		cidr_block = "0.0.0.0/0"
-		network_entity_id = "${lookup(data.oci_core_private_ips.myPrivateIPs.private_ips[0],"id")}" 
-	}
-	vcn_id = "${oci_core_vcn.vcn1.id}"
-}
