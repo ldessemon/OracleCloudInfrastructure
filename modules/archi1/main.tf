@@ -218,6 +218,7 @@ resource "oci_core_subnet" "vcn1_private_subnet" {
 	security_list_ids = ["${oci_core_security_list.vcn1_private_seclist.id}"]
 	vcn_id = "${oci_core_vcn.vcn1.id}"
 	route_table_id = "${oci_core_route_table.vcn1_private_route_table.id}"
+    prohibit_public_ip_on_vnic = "true"
 }
 resource "oci_core_subnet" "vcn1_dmz_subnet" {
 	#Required
@@ -235,7 +236,31 @@ resource "oci_core_subnet" "vcn1_dmz_subnet" {
 resource "oci_core_instance" "NatInstance" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
-    display_name = "nat_instance"
+    display_name = "NAT Instance"
+    source_details {
+	    #Required
+	    source_type = "image"
+	    source_id = "${var.InstanceImageOCID[var.region]}"
+	}
+    shape = "${var.InstanceShape}"
+    subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
+    create_vnic_details {
+        subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
+        skip_source_dest_check = true
+    }
+    metadata {
+      ssh_authorized_keys = "${var.ssh_public_key}"
+      user_data = "${base64encode(file("${path.module}/user_data.tpl"))}"
+    }
+    timeouts {
+        create = "10m"
+    }
+}
+
+resource "oci_core_instance" "instance1" {
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    compartment_id = "${var.compartment_ocid}"
+    display_name = "${var.public_instance_name}"
     source_details {
 	    #Required
 	    source_type = "image"
@@ -262,7 +287,29 @@ resource "oci_core_instance" "NatInstance" {
 resource "oci_core_instance" "PrivateInstance" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
-    display_name = "PrivateInstance"
+    display_name = "${var.private_instance_name}"
+    source_details {
+	    #Required
+	    source_type = "image"
+	    source_id = "${var.InstanceImageOCID[var.region]}"
+	}
+    shape = "${var.InstanceShape}"
+    create_vnic_details {
+      subnet_id = "${oci_core_subnet.vcn1_private_subnet.id}"
+      assign_public_ip = false
+    }
+    metadata {
+      ssh_authorized_keys = "${var.ssh_public_key}"
+    }
+    timeouts {
+      create = "10m"
+    }
+}
+
+resource "oci_core_instance" "DmzInstance" {
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    compartment_id = "${var.compartment_ocid}"
+    display_name = "${var.dmz_instance_name}"
     source_details {
 	    #Required
 	    source_type = "image"

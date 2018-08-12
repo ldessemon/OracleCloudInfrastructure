@@ -79,3 +79,7 @@ variable "ssh_public_key" {
     description = "SSH public key"
 }
 
+variable "public_instance_name" {}
+variable "private_instance_name" {}
+variable "dmz_instance_name" {}
+
