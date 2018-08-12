@@ -230,7 +230,11 @@ resource "oci_core_instance" "NatInstance" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "nat_instance"
-    source_details = ["${var.InstanceImageOCID[var.region]}"]
+    source_details {
+	    #Required
+	    source_type = "image"
+	    source_id = "${var.InstanceImageOCID[var.region]}"
+	}
     shape = "${var.InstanceShape}"
     subnet_id = "${oci_core_subnet.vcn1_public_subnet.id}"
     hostname_label = "nat_instance"
@@ -240,7 +244,7 @@ resource "oci_core_instance" "NatInstance" {
     }
     metadata {
       ssh_authorized_keys = "${var.ssh_public_key}"
-      user_data = "${base64encode(file("./user_data.tpl"))}"
+      user_data = "${base64encode(file("${path.module}/user_data.tpl"))}"
     }
     timeouts {
         create = "10m"
@@ -254,7 +258,11 @@ resource "oci_core_instance" "PrivateInstance" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "PrivateInstance"
-    source_details = ["${var.InstanceImageOCID[var.region]}"]
+    source_details {
+	    #Required
+	    source_type = "image"
+	    source_id = "${var.InstanceImageOCID[var.region]}"
+	}
     shape = "${var.InstanceShape}"
     create_vnic_details {
       subnet_id = "${oci_core_subnet.vcn1_private_subnet.id}"
