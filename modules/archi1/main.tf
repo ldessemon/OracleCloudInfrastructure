@@ -146,9 +146,12 @@ resource "oci_core_security_list" "vcn1_private_seclist" {
         destination = "0.0.0.0/0"
         protocol = "6"
     }]
-    ingress_security_rules = [
-	{
-        protocol = "all"
+    ingress_security_rules = [{
+        protocol = "6"
+        tcp_options {
+            "max" = 22
+            "min" = 22
+        }
         source = "${var.vcn_cidr}"
     }]
 }
