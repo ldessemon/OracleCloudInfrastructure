@@ -274,3 +274,18 @@ resource "oci_core_instance" "PrivateInstance" {
       create = "10m"
     }
 }
+
+
+resource "oci_core_route_table" "vcn1_private_route_table" {
+	#Required
+	compartment_id = "${var.compartment_ocid}"
+	route_rules {
+		#Required
+		network_entity_id = "${oci_core_internet_gateway.vcn1_internet_gateway.id}"
+
+		#Optional
+		cidr_block = "0.0.0.0/0"
+		network_entity_id = "${lookup(data.oci_core_private_ips.myPrivateIPs.private_ips[0],"id")}" 
+	}
+	vcn_id = "${oci_core_vcn.test_vcn.id}"
+}
