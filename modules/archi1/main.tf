@@ -234,7 +234,7 @@ resource "oci_core_subnet" "vcn1_dmz_subnet" {
 # =========== Create the NAT vm instance in the Public Subnet ===============
 
 resource "oci_core_instance" "NatInstance" {
-    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "NAT Instance"
     source_details {
@@ -258,7 +258,7 @@ resource "oci_core_instance" "NatInstance" {
 }
 
 resource "oci_core_instance" "instance1" {
-    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD1 - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "${var.public_instance_name}"
     source_details {
@@ -285,7 +285,7 @@ resource "oci_core_instance" "instance1" {
 
 
 resource "oci_core_instance" "PrivateInstance" {
-    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD - 1],"name")}"
+    availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.AD2 - 1],"name")}"
     compartment_id = "${var.compartment_ocid}"
     display_name = "${var.private_instance_name}"
     source_details {

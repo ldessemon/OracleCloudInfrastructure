@@ -56,10 +56,13 @@ variable "dmz_subnet_availability_domain" {
 
 
 # Choose an Availability Domain
-variable "AD" {
+variable "AD1" {
     default = "1"
 }
 
+variable "AD2" {
+    default = "2"
+}
 
 
 variable "InstanceShape" {
